@@ -6,7 +6,7 @@ argument-hint: "[Stichtag JJJJ-MM-TT, optional]"
 
 # Morgenfolge
 
-Dieser Skill schreibt den Text der Morgenfolge. Er ändert keine Notizen und keine Tagesdateien.
+Dieser Skill schreibt den Text der Morgenfolge und erzeugt daraus die MP3-Datei in `audio/`. Er ändert keine Notizen und keine Tagesdateien.
 
 Stichtag: $ARGUMENTS
 
@@ -23,6 +23,8 @@ Steht dort kein Datum, ist der Stichtag heute. Mit einem früheren Stichtag läs
 7. Zähle die Wörter, zum Beispiel mit `wc -w`. Sind es mehr als 4.000, kürze den ältesten Stoff weiter, bis die Grenze eingehalten ist.
 8. Zeige den Text im Chat. Nenne den Speicherort, die Wortzahl, die Gliederung und den Stoff, den du aus Platzgründen weglassen musstest.
 9. Starte zum Schluss immer den Skill `hoerprobe`. Gib ihm die gespeicherte Folge und alle dafür verwendeten Dateien mit und nenne ihm, welche Tage neuer Stoff sind. Gib sein Ergebnis im Chat weiter. Ändere den Text nicht von dir aus, sondern frage bei Mängeln nach, ob du ihn korrigieren sollst.
+10. Meldet die Hörprobe keine Mängel, erzeuge danach das Audio mit `.venv/bin/python werkzeuge/vorlesen.py zusammenfassungen/morgen/JJJJ-MM-TT.md` und nimm dabei den Namen der gerade gespeicherten Folge. Das kann ein paar Minuten dauern. Meldet sie Mängel, kläre sie zuerst und erzeuge das Audio erst danach, damit sich der Nutzer keinen Fehler einprägt.
+11. Nenne zum Schluss den Speicherort der MP3-Datei und ihre Länge. Ist die Audioerzeugung fehlgeschlagen, gib die Fehlermeldung weiter. Der Text bleibt dann gespeichert.
 
 ## So ist die Folge aufgebaut
 

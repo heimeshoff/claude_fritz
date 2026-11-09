@@ -9,3 +9,7 @@ zusammenfassungen/tage/
 zusammenfassungen/wochen/
 zusammenfassungen/monate/
 zusammenfassungen/morgen/
+
+# Vorlese-Software und Stimme lassen sich jederzeit neu installieren
+.venv/
+stimmen/
