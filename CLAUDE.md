@@ -37,17 +37,20 @@ Fürs Lernen darf nichts Falsches hängen bleiben: Claude gibt nur wieder, was i
 - **Zusammenfassungen in Stufen:** Sie liegen in `zusammenfassungen/`: `tage/` (ausführlich), `wochen/` und `monate/` (das Wichtigste) sowie `morgen/` (die fertige Folge).
 - **Morgenfolge:** Sie wird täglich neu zusammengesetzt und dauert höchstens 30 Minuten, also etwa 4.000 Wörter. Sie ist nach Inhalten aufgebaut und nicht nach AG-Tagen: Was zusammengehört, steht zusammen, auch wenn es von verschiedenen Tagen stammt. AG-Tage werden dabei nicht genannt. Sie enthält nur Stoff aus den letzten sieben Tagen. Innerhalb dieser Zeit bestimmt das Alter nur die Ausführlichkeit: Die vier neuesten Tage mit Notizen kommen ausführlich, die übrigen nur mit den Kernpunkten. Zum Schluss kommen die offenen Fragen.
 - **Tagesdateien:** Sie sind ein Zwischenschritt und werden nicht direkt angehört. Sie halten fest, wann welcher Stoff dran war, damit die Ausführlichkeit nach dem Alter berechnet werden kann.
-- **Rückblick:** Wochen- und Monatsrückblicke gibt es nur auf Wunsch und nicht in der Morgenfolge. Fritz kann damit gezielt die wichtigsten Inhalte einer bestimmten Woche oder eines Monats abrufen. Auch darin wird nach Inhalten gegliedert.
+- **Rückblick:** Noch nicht gebaut, Fritz hat das vorerst zurückgestellt. Wochen- und Monatsrückblicke soll es später nur auf Wunsch und nicht in der Morgenfolge geben. Auch darin wird nach Inhalten gegliedert.
 - **Start:** Fritz startet die Skills vorerst von Hand. `/morgen-folge` erledigt danach Text, Prüfung und MP3 in einem Durchgang. Einen automatischen Start am Morgen gibt es erst, wenn er ihn möchte.
 - **Stimme:** Das Audio erzeugt Piper mit der Stimme `de_DE-thorsten-medium`, kostenlos und lokal. Fritz hat sie im Hörtest bestätigt, auch die Aussprache von Paragrafen und Abkürzungen.
 - **Audiodateien:** Sie liegen in `audio/` und kommen nicht in Git, weil das Repo sonst schnell um Gigabytes wächst. Sie lassen sich jederzeit aus den Texten neu erzeugen.
 - **Git:** Code und Skills werden über Git versioniert. Echte Notizen und daraus entstandene Zusammenfassungen bleiben nur auf diesem Rechner und stehen in der `.gitignore`. Dafür gibt es keine Sicherung über GitHub.
-- **Endziel:** Später soll die Folge auf Fritz' Android-Handy laufen. Das Handy spielt nur ab, Claude und die Audioerzeugung laufen woanders.
+- **Datenschutz:** Die Notizen enthalten nur AG-Stoff, also keine echten Namen oder Details aus Stationsakten. Das bleibt auch beim Mitschreiben die Regel.
+- **Weg auf den Rechner:** Fritz legt die Goodnotes-Exporte weiter von Hand in `notizen/` ab. Automatisiert wird das erst, wenn es ihn im Alltag wirklich stört.
+- **Laufort:** Claude und die Audioerzeugung laufen auf diesem Rechner. Das Handy spielt nur ab.
+- **Endziel und Weg aufs Handy:** Später soll die Folge auf Fritz' Android-Handy laufen. Die fertige MP3 wird dafür automatisch in einen Ordner auf dem Handy kopiert, nur vom Rechner aufs Handy, und dort mit einer vorhandenen Player-App abgespielt. Rechner und Handy müssen dafür kurz gleichzeitig an und im selben WLAN sein. Eine eigene App oder Webseite ist nicht nötig.
+- **Zeitpunkt:** Fritz startet `/morgen-folge` am Abend vor dem Hören, damit die Folge am Morgen schon auf dem Handy liegt. Der Stichtag bleibt der Tag der Erzeugung, also auch das Datum im Dateinamen. Dass der Stoff beim Hören dadurch einen Tag weiter zurückreicht, ist in Ordnung.
 
 ## Noch nicht entschieden
 
 Diese Punkte bitte mit Fritz klären, wenn sie relevant werden, und das Ergebnis hier eintragen:
 
-- Können in den Notizen echte Namen oder Details aus Stationsakten vorkommen? Das muss vor dem iPad-Abgleich geklärt sein.
-- Wie kommen die Goodnotes-Exporte später automatisch auf den Rechner, wenn sie nicht über Git laufen?
-- Wo laufen Claude und die Audioerzeugung später, und wird die Android-App eine installierbare Webseite oder eine richtige App?
+- Mit welchem Programm wird der Ordner auf das Handy kopiert, und mit welcher Player-App hört Fritz? Syncthing und AntennaPod sind Kandidaten. Für Syncthing muss vorher geklärt werden, welche Android-Version noch gepflegt wird.
+- Wie bleiben alte Folgen vom Handy fern? Naheliegend ist ein eigener Abgleichordner nur mit den letzten paar Folgen statt des ganzen Ordners `audio/`.
