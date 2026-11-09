@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan: Notizen zum Anhören</title>
+<!--
+  PFLEGEHINWEISE FÜR CLAUDE
+
+  Diese Datei ist die zentrale Quelle für alle Feature-Planungen. Die Regeln dazu stehen in CLAUDE.md.
+
+  - Aufgabe erledigt: im <input> der Aufgabe das Wort "checked" ergänzen.
+  - Neue Aufgabe: eine Zeile <li><label>…</label></li> im passenden Meilenstein kopieren, ohne "checked".
+  - Noch zu treffende Entscheidung: <span class="tag">Entscheiden</span> vor den Text setzen. Ist sie gefallen,
+    das Ergebnis in den Aufgabentext schreiben und abhaken.
+  - Neuer Meilenstein: einen <details class="meilenstein"> kopieren und durchnummerieren.
+  - Zurückgestellt oder nur bei Bedarf: data-zustand="zurueckgestellt" oder data-zustand="bei-bedarf".
+  - Bei jeder Änderung das Datum in <time id="stand"> aktualisieren.
+
+  Zahlen, Fortschrittsbalken, Status und "Als Nächstes" berechnet das Skript unten selbst. Nicht von Hand pflegen.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --papier: #f7f5ef;
+    --flaeche: #fffefb;
+    --tinte: #23261f;
+    --leise: #62675b;
+    --linie: #dcd9cc;
+    --akzent: #2f6a4f;
+    --akzent-sanft: #e2eee6;
+    --plan: #8a5a14;
+    --plan-sanft: #f6ecd8;
+    --grau-sanft: #ecebe3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --papier: #171a16;
+      --flaeche: #20241e;
+      --tinte: #eaebe4;
+      --leise: #a5aa9c;
+      --linie: #383d33;
+      --akzent: #7cc4a0;
+      --akzent-sanft: #233a2d;
+      --plan: #e0b566;
+      --plan-sanft: #3b2f18;
+      --grau-sanft: #2c3029;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--papier);
+    color: var(--tinte);
+    font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 24px 64px; }
+  h1, h2 { font-family: Charter, "Bitstream Charter", Georgia, "Liberation Serif", serif; font-weight: 700; line-height: 1.2; }
+  h1 { font-size: clamp(2rem, 6vw, 2.75rem); margin: 0 0 8px; }
+  h2 { font-size: 1.5rem; margin: 48px 0 16px; }
+  code {
+    font: 0.88em ui-monospace, "SF Mono", "DejaVu Sans Mono", Menlo, monospace;
+    background: var(--grau-sanft);
+    padding: 1px 5px;
+    border-radius: 4px;
+    overflow-wrap: anywhere;
+  }
+  .leise { color: var(--leise); }
+
+  /* Kopf */
+  .einleitung { margin: 0; color: var(--leise); }
+  .gesamt { margin-top: 24px; }
+  .gesamt-zeile { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 0.94rem; }
+  .gesamt-zeile strong { font-variant-numeric: tabular-nums; }
+  .balken { height: 8px; margin-top: 8px; background: var(--grau-sanft); border-radius: 99px; overflow: hidden; }
+  .balken > span { display: block; height: 100%; width: 0; background: var(--akzent); border-radius: 99px; }
+
+  .als-naechstes {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--plan-sanft);
+    border-left: 4px solid var(--plan);
+    border-radius: 0 8px 8px 0;
+  }
+  .als-naechstes small { display: block; font-weight: 600; color: var(--plan); }
+
+  /* Ablauf */
+  .ablauf {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    counter-reset: schritt;
+  }
+  .ablauf li {
+    counter-increment: schritt;
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.94rem;
+  }
+  .ablauf li::before {
+    content: counter(schritt);
+    display: inline-grid; place-items: center;
+    width: 26px; height: 26px; margin-right: 8px;
+    border-radius: 50%;
+    background: var(--akzent-sanft); color: var(--akzent);
+    font-weight: 700; font-size: 0.85rem;
+  }
+  .ablauf strong { font-size: 1rem; }
+  .ablauf p { margin: 8px 0 0; color: var(--leise); }
+  .ablauf .geplant { border-style: dashed; border-color: var(--plan); }
+  .ablauf .geplant::before { background: var(--plan-sanft); color: var(--plan); }
+  .ablauf .geplant em { color: var(--plan); font-style: normal; font-weight: 600; }
+
+  /* Meilensteine */
+  .meilenstein {
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .meilenstein.jetzt { border-color: var(--plan); box-shadow: inset 4px 0 0 var(--plan); }
+  .meilenstein summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 20px;
+    border-radius: 10px;
+  }
+  .meilenstein summary::-webkit-details-marker { display: none; }
+  .meilenstein summary:focus-visible { outline: 2px solid var(--akzent); outline-offset: 2px; }
+  .titelzeile { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .titel { font-weight: 650; font-size: 1.08rem; }
+  .titel::before { content: "▸"; display: inline-block; width: 1.1em; color: var(--leise); transition: transform .12s; }
+  details[open] .titel::before { transform: rotate(90deg); }
+  .meta { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--leise); font-variant-numeric: tabular-nums; }
+  .status { padding: 2px 10px; border-radius: 99px; font-weight: 600; font-size: 0.8rem; background: var(--grau-sanft); color: var(--leise); }
+  .status.fertig { background: var(--akzent-sanft); color: var(--akzent); }
+  .status.jetzt { background: var(--plan-sanft); color: var(--plan); }
+  .meilenstein .balken { height: 4px; margin-top: 10px; }
+  .inhalt { padding: 0 20px 18px; }
+  .ziel { margin: 0 0 12px; color: var(--leise); }
+  .entschieden { margin: 0 0 14px; padding: 10px 14px; background: var(--grau-sanft); border-radius: 8px; font-size: 0.92rem; }
+  .entschieden strong { display: block; }
+  .entschieden ul { margin: 4px 0 0; padding-left: 18px; }
+
+  .aufgaben { list-style: none; margin: 0; padding: 0; }
+  .aufgaben li { border-top: 1px solid var(--linie); }
+  .aufgaben li:first-child { border-top: 0; }
+  .aufgaben label { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; }
+  .aufgaben input {
+    appearance: none;
+    flex: none;
+    width: 20px; height: 20px; margin: 3px 0 0;
+    border: 2px solid var(--leise);
+    border-radius: 5px;
+    display: grid; place-items: center;
+  }
+  .aufgaben input:checked { background: var(--akzent); border-color: var(--akzent); }
+  .aufgaben input:checked::after {
+    content: "";
+    width: 5px; height: 10px; margin-top: -2px;
+    border: solid var(--flaeche);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .aufgaben input:checked + span { color: var(--leise); }
+  .tag {
+    display: inline-block;
+    margin-right: 6px; padding: 0 7px;
+    border-radius: 4px;
+    background: var(--plan-sanft); color: var(--plan);
+    font-size: 0.78rem; font-weight: 650;
+  }
+
+  /* Pflege */
+  .ideen { list-style: disc; padding-left: 20px; margin: 0; }
+  .ideen li { margin-bottom: 6px; }
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--linie); font-size: 0.88rem; color: var(--leise); }
+
+  @media (max-width: 720px) {
+    main { padding: 32px 16px 48px; }
+    .ablauf { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Plan: Notizen zum Anhören</h1>
+  <p class="einleitung">Aus deinen AG-Notizen wird eine tägliche Audiofolge zum Wiederholen. Stand: <time id="stand" datetime="2026-11-09">9. November 2026</time></p>
+
+  <div class="gesamt">
+    <div class="gesamt-zeile"><span id="gesamt-meilensteine"></span><strong id="gesamt-aufgaben"></strong></div>
+    <div class="balken"><span id="gesamt-balken"></span></div>
+  </div>
+
+  <div class="als-naechstes" id="als-naechstes" hidden>
+    <small>Als Nächstes</small>
+    <span id="naechste-aufgabe"></span>
+  </div>
+</header>
+
+<section>
+  <h2>Der Ablauf im Groben</h2>
+  <ol class="ablauf">
+    <li><strong>Mitschreiben</strong><p>An AG-Tagen in Goodnotes auf dem iPad, nur AG-Stoff.</p></li>
+    <li><strong>Ablegen</strong><p>Neue Seiten als PDF oder PNG exportieren und von Hand in <code>notizen/</code> legen.</p></li>
+    <li><strong>Zusammenfassen</strong><p><code>/notizen-zusammenfassen</code> macht daraus je Tag einen Text und verschiebt die Notiz nach <code>erledigt/</code>.</p></li>
+    <li><strong>Folge erzeugen</strong><p>Am Abend <code>/morgen-folge</code> starten: Text schreiben, per Hörprobe prüfen, MP3 in <code>audio/</code> ablegen.</p></li>
+    <li class="geplant"><strong>Aufs Handy</strong><p><em>Geplant:</em> Die MP3 wird automatisch in einen Ordner auf dem Handy kopiert.</p></li>
+    <li><strong>Anhören</strong><p>Bisher spielst du die MP3 selbst ab. <span class="leise">Später morgens auf dem Handy.</span></p></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Meilensteine</h2>
+
+  <details class="meilenstein" open>
+    <summary>
+      <div class="titelzeile"><span class="titel">1. Notizen werden zu Tagestexten</span><span class="meta"></span></div>
+      <div class="balken"><span></span></div>
+    </summary>
+    <div class="inhalt">
+      <p class="ziel">Aus PDF, PNG oder Text entsteht je AG-Tag eine geprüfte Zusammenfassung.</p>
+      <ul class="aufgaben">
+        <li><label><input type="checkbox" checked disabled><span>Ablage in <code>notizen/</code> festlegen, auch für mehrere AG-Tage in einer Datei</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Skill <code>notizen-zusammenfassen</code> bauen</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Verarbeitete Notizen automatisch nach <code>notizen/erledigt/</code> verschieben</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Skill <code>hoerprobe</code> bauen, der Tagestexte gegen die Notizen prüft</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Echte Notizen und Zusammenfassungen per <code>.gitignore</code> aus Git heraushalten</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Erstes echtes Goodnotes-PDF zu Tagestexten verarbeiten</span></label></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="meilenstein" open>
+    <summary>
+      <div class="titelzeile"><span class="titel">2. Morgenfolge als Text</span><span class="meta"></span></div>
+      <div class="balken"><span></span></div>
+    </summary>
+    <div class="inhalt">
+      <p class="ziel">Der Stoff der letzten sieben Tage wird nach Inhalten zu einem Hörtext von höchstens 30 Minuten zusammengesetzt.</p>
+      <ul class="aufgaben">
+        <li><label><input type="checkbox" checked disabled><span>Skill <code>morgen-folge</code> bauen</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Nach Inhalten gliedern, ohne AG-Tage zu nennen</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Ausführlichkeit nach Alter staffeln: vier neueste Tage ausführlich, der Rest in Kernpunkten</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Offene Fragen ans Ende stellen</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Hörprobe auch auf Morgenfolgen ausweiten</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Erste Folge schreiben (<code>zusammenfassungen/morgen/2026-11-09.md</code>)</span></label></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="meilenstein" open>
+    <summary>
+      <div class="titelzeile"><span class="titel">3. Morgenfolge als Audio</span><span class="meta"></span></div>
+      <div class="balken"><span></span></div>
+    </summary>
+    <div class="inhalt">
+      <p class="ziel">Aus dem Text entsteht kostenlos und lokal eine MP3.</p>
+      <ul class="aufgaben">
+        <li><label><input type="checkbox" checked disabled><span>Piper mit der Stimme <code>de_DE-thorsten-medium</code> installieren</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Skript <code>werkzeuge/vorlesen.py</code> schreiben</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Hörtest machen, auch für Paragrafen und Abkürzungen</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Audio in <code>/morgen-folge</code> einbauen, erst nach bestandener Hörprobe</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>MP3-Dateien aus Git heraushalten</span></label></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="meilenstein" open>
+    <summary>
+      <div class="titelzeile"><span class="titel">4. Die Folge kommt aufs Handy</span><span class="meta"></span></div>
+      <div class="balken"><span></span></div>
+    </summary>
+    <div class="inhalt">
+      <p class="ziel">Du startest die Folge abends am Rechner und hörst sie morgens auf dem Android-Handy, ohne etwas von Hand zu kopieren.</p>
+      <div class="entschieden">
+        <strong>Schon entschieden</strong>
+        <ul>
+          <li>Kopiert wird nur in eine Richtung, vom Rechner aufs Handy.</li>
+          <li>Abgespielt wird mit einer vorhandenen Player-App. Eine eigene App oder Webseite ist nicht nötig.</li>
+          <li>Rechner und Handy müssen dafür kurz gleichzeitig an und im selben WLAN sein.</li>
+        </ul>
+      </div>
+      <ul class="aufgaben">
+        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Kopierprogramm festlegen. Kandidat ist Syncthing, vorher klären, welche Android-Version noch gepflegt wird</span></label></li>
+        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Player-App festlegen. Kandidat ist AntennaPod</span></label></li>
+        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Festlegen, wie alte Folgen vom Handy fernbleiben. Naheliegend ist ein eigener Abgleichordner mit nur den letzten paar Folgen</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Kopierprogramm auf Rechner und Handy einrichten</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Player-App auf dem Handy einrichten</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Neue MP3 automatisch in den Ordner für das Handy legen lassen</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Echten Durchlauf testen: abends <code>/morgen-folge</code> starten, morgens auf dem Handy hören</span></label></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="meilenstein" data-zustand="zurueckgestellt" open>
+    <summary>
+      <div class="titelzeile"><span class="titel">5. Rückblicke auf Wunsch</span><span class="meta"></span></div>
+      <div class="balken"><span></span></div>
+    </summary>
+    <div class="inhalt">
+      <p class="ziel">Wochen- und Monatsrückblicke mit dem Wichtigsten. Vorerst zurückgestellt.</p>
+      <div class="entschieden">
+        <strong>Schon entschieden</strong>
+        <ul>
+          <li>Es gibt sie nur auf Wunsch und nicht in der Morgenfolge.</li>
+          <li>Sie werden nach Inhalten gegliedert und liegen in <code>zusammenfassungen/wochen/</code> und <code>monate/</code>.</li>
+        </ul>
+      </div>
+      <ul class="aufgaben">
+        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Festlegen, was ein Rückblick genau enthält und wie du ihn startest</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Wochenrückblick bauen</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Monatsrückblick bauen</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Hörprobe auf Rückblicke ausweiten</span></label></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="meilenstein" data-zustand="bei-bedarf" open>
+    <summary>
+      <div class="titelzeile"><span class="titel">6. Mehr Automatik</span><span class="meta"></span></div>
+      <div class="balken"><span></span></div>
+    </summary>
+    <div class="inhalt">
+      <p class="ziel">Wird erst gebaut, wenn du es möchtest oder die Handarbeit dich im Alltag wirklich stört.</p>
+      <ul class="aufgaben">
+        <li><label><input type="checkbox" disabled><span><code>/morgen-folge</code> automatisch starten</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Goodnotes-Exporte automatisch auf den Rechner holen</span></label></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section>
+  <h2>Noch nicht besprochen</h2>
+  <p class="leise">Vorschläge von Claude. Daraus werden erst Aufgaben, wenn du zustimmst.</p>
+  <ul class="ideen">
+    <li>Die alten Übungsdateien aus <code>notizen/erledigt/</code> und <code>zusammenfassungen/2026-11-09.md</code> aus Git entfernen. Sie stammen noch aus der Zeit vor dem Referendariats-Thema.</li>
+  </ul>
+</section>
+
+<footer>
+  Diese Datei ist die Grundlage für alle weiteren Feature-Planungen. Die Häkchen setzt Claude, sobald etwas erledigt ist. Änderungen fragst du einfach im Gespräch an.
+</footer>
+
+</main>
+
+<script>
+  // Berechnet Zahlen, Status und "Als Nächstes" aus den Häkchen, damit nichts von Hand gepflegt werden muss.
+  const meilensteine = [...document.querySelectorAll(".meilenstein")];
+  const ZURUECKGESTELLT = { zurueckgestellt: "Zurückgestellt", "bei-bedarf": "Bei Bedarf" };
+  let aufgabenGesamt = 0, aufgabenFertig = 0, meilensteineFertig = 0, jetzt = null;
+
+  for (const m of meilensteine) {
+    const boxen = [...m.querySelectorAll(".aufgaben input")];
+    const fertig = boxen.filter(b => b.checked).length;
+    const alleFertig = boxen.length > 0 && fertig === boxen.length;
+    const geparkt = ZURUECKGESTELLT[m.dataset.zustand];
+    aufgabenGesamt += boxen.length;
+    aufgabenFertig += fertig;
+    if (alleFertig) meilensteineFertig++;
+
+    let text = "Offen", klasse = "";
+    if (alleFertig) { text = "Fertig"; klasse = "fertig"; m.open = false; }
+    else if (geparkt) { text = geparkt; }
+    else if (!jetzt) { jetzt = m; text = "Jetzt dran"; klasse = "jetzt"; m.classList.add("jetzt"); }
+
+    const status = document.createElement("span");
+    status.className = "status " + klasse;
+    status.textContent = text;
+    const zahl = document.createElement("span");
+    zahl.textContent = fertig + " von " + boxen.length;
+    m.querySelector(".meta").append(zahl, status);
+    m.querySelector(".balken > span").style.width = (boxen.length ? fertig / boxen.length * 100 : 0) + "%";
+  }
+
+  document.getElementById("gesamt-meilensteine").textContent =
+    meilensteineFertig + " von " + meilensteine.length + " Meilensteinen fertig";
+  document.getElementById("gesamt-aufgaben").textContent =
+    aufgabenFertig + " von " + aufgabenGesamt + " Aufgaben erledigt";
+  document.getElementById("gesamt-balken").style.width =
+    (aufgabenGesamt ? aufgabenFertig / aufgabenGesamt * 100 : 0) + "%";
+
+  if (jetzt) {
+    const offen = jetzt.querySelector(".aufgaben input:not(:checked) + span");
+    if (offen) {
+      document.getElementById("naechste-aufgabe").innerHTML = offen.innerHTML;
+      document.getElementById("als-naechstes").hidden = false;
+    }
+  }
+</script>
+</body>
+</html>
