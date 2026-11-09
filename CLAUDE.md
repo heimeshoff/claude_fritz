@@ -25,11 +25,17 @@ Der geplante Ablauf:
 
 Da die Zusammenfassung vorgelesen wird, muss sie auch beim Hören funktionieren: ganze Sätze und keine Tabellen, Symbole oder verschachtelten Listen.
 
+## Entschieden
+
+- **Notizen:** Jede Notiz ist eine eigene `.md`- oder `.txt`-Datei im Ordner `notizen/`.
+- **Zeitraum:** Eine Zusammenfassung umfasst alle Notizen, die noch nicht zusammengefasst wurden. Danach werden sie nach `notizen/erledigt/` verschoben.
+- **Zusammenfassungen:** Sie liegen in `zusammenfassungen/`.
+- **Git:** In diesem Trainingsprojekt wird alles über Git synchronisiert, auch Notizen, Zusammenfassungen und später die Audiodateien.
+
 ## Noch nicht entschieden
 
 Diese Punkte bitte mit Fritz klären, wenn sie relevant werden, und das Ergebnis hier eintragen:
 
-- Wann werden die Notizen zusammengefasst, und welchen Zeitraum deckt eine Zusammenfassung ab?
-- Wo genau liegen die Notizen, und in welchem Format?
-- Wo werden Zusammenfassungen und Audiodateien gespeichert, und was davon kommt ins Git?
+- Wann genau werden die Notizen zusammengefasst? Bisher startet Fritz das von Hand mit dem Skill `/notizen-zusammenfassen`.
+- Wo werden Audiodateien gespeichert?
 - Womit wird das Audio erzeugt?
