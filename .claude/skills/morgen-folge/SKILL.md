@@ -6,7 +6,7 @@ argument-hint: "[Stichtag JJJJ-MM-TT, optional]"
 
 # Morgenfolge
 
-Dieser Skill schreibt den Text der Morgenfolge und erzeugt daraus die MP3-Datei in `audio/`. Er ändert keine Notizen und keine Tagesdateien.
+Dieser Skill schreibt den Text der Morgenfolge, erzeugt daraus die MP3-Datei in `audio/` und legt sie in den Ordner fürs Handy. Er ändert keine Notizen und keine Tagesdateien.
 
 Stichtag: $ARGUMENTS
 
@@ -24,7 +24,8 @@ Steht dort kein Datum, ist der Stichtag heute. Mit einem früheren Stichtag läs
 8. Zeige den Text im Chat. Nenne den Speicherort, die Wortzahl, die Gliederung und den Stoff, den du aus Platzgründen weglassen musstest.
 9. Starte zum Schluss immer den Skill `hoerprobe`. Gib ihm die gespeicherte Folge und alle dafür verwendeten Dateien mit und nenne ihm, welche Tage neuer Stoff sind. Gib sein Ergebnis im Chat weiter. Ändere den Text nicht von dir aus, sondern frage bei Mängeln nach, ob du ihn korrigieren sollst.
 10. Meldet die Hörprobe keine Mängel, erzeuge danach das Audio mit `.venv/bin/python werkzeuge/vorlesen.py zusammenfassungen/morgen/JJJJ-MM-TT.md` und nimm dabei den Namen der gerade gespeicherten Folge. Das kann ein paar Minuten dauern. Meldet sie Mängel, kläre sie zuerst und erzeuge das Audio erst danach, damit sich der Nutzer keinen Fehler einprägt.
-11. Nenne zum Schluss den Speicherort der MP3-Datei und ihre Länge. Ist die Audioerzeugung fehlgeschlagen, gib die Fehlermeldung weiter. Der Text bleibt dann gespeichert.
+11. Lege die fertige MP3-Datei mit `.venv/bin/python werkzeuge/aufs_handy.py audio/JJJJ-MM-TT.mp3` in den Ordner fürs Handy und nimm dabei denselben Namen. Syncthing überträgt sie von dort, und das Skript behält nur die drei neuesten Folgen. Ist die Audioerzeugung fehlgeschlagen, entfällt dieser Schritt. Lief der Skill mit einem früheren Stichtag zum Testen, entfällt er ebenfalls.
+12. Nenne zum Schluss den Speicherort der MP3-Datei und ihre Länge und ob sie fürs Handy abgelegt wurde. Ist die Audioerzeugung oder das Ablegen fehlgeschlagen, gib die Fehlermeldung weiter. Der Text bleibt dann gespeichert. Erinnere bei Erfolg daran, dass Rechner und Handy kurz gleichzeitig an und im selben WLAN sein müssen.
 
 ## So ist die Folge aufgebaut
 

@@ -284,15 +284,17 @@
           <li>Kopiert wird nur in eine Richtung, vom Rechner aufs Handy.</li>
           <li>Abgespielt wird mit einer vorhandenen Player-App. Eine eigene App oder Webseite ist nicht nötig.</li>
           <li>Rechner und Handy müssen dafür kurz gleichzeitig an und im selben WLAN sein.</li>
+          <li>Das Handy ist ein Fairphone mit /e/OS 4.2 auf Android 16.</li>
         </ul>
       </div>
       <ul class="aufgaben">
-        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Kopierprogramm festlegen. Kandidat ist Syncthing, vorher klären, welche Android-Version noch gepflegt wird</span></label></li>
-        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Player-App festlegen. Kandidat ist AntennaPod</span></label></li>
-        <li><label><input type="checkbox" disabled><span><span class="tag">Entscheiden</span>Festlegen, wie alte Folgen vom Handy fernbleiben. Naheliegend ist ein eigener Abgleichordner mit nur den letzten paar Folgen</span></label></li>
-        <li><label><input type="checkbox" disabled><span>Kopierprogramm auf Rechner und Handy einrichten</span></label></li>
-        <li><label><input type="checkbox" disabled><span>Player-App auf dem Handy einrichten</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Kopierprogramm festlegen: Syncthing-Fork aus F-Droid, weil die offizielle Android-App veraltet ist. Die ungeklärte Übergabe der Pflege ist bekannt und wegen der nachbaubaren Versionen und des reinen AG-Stoffs in Kauf genommen</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Player-App festlegen: AntennaPod, das den Handy-Ordner wie einen Podcast anzeigt</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Festlegen, wie alte Folgen vom Handy fernbleiben: Nur was in <code>audio/handy/</code> liegt, kommt aufs Handy, und zwar die letzten drei Folgen. <code>audio/</code> bleibt das Archiv</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Kopierprogramm auf Rechner und Handy einrichten</span></label></li>
+        <li><label><input type="checkbox" checked disabled><span>Player-App auf dem Handy einrichten</span></label></li>
         <li><label><input type="checkbox" disabled><span>Neue MP3 automatisch in den Ordner für das Handy legen lassen</span></label></li>
+        <li><label><input type="checkbox" disabled><span>Auf dem Handy prüfen: Abgleich nur in eine Richtung, Ordnerzugriff von AntennaPod unter Android 16, gespeicherte Hörposition und Verhalten bei gelöschten Folgen</span></label></li>
         <li><label><input type="checkbox" disabled><span>Echten Durchlauf testen: abends <code>/morgen-folge</code> starten, morgens auf dem Handy hören</span></label></li>
       </ul>
     </div>
