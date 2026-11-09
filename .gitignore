@@ -1,2 +1,11 @@
 # Audiodateien sind groß und lassen sich aus den Texten neu erzeugen
 audio/
+
+# Echte Notizen und was daraus entsteht, bleiben nur auf diesem Rechner.
+# Schon vorher in Git aufgenommene Übungsdateien sind davon nicht betroffen.
+REF_Notizen/
+notizen/
+zusammenfassungen/tage/
+zusammenfassungen/wochen/
+zusammenfassungen/monate/
+zusammenfassungen/morgen/

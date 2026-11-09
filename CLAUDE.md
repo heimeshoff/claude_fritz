@@ -21,7 +21,7 @@ Fritz ist im juristischen Referendariat und schreibt an AG-Tagen Notizen zu den 
 
 Der geplante Ablauf:
 
-1. **Sammeln:** Fritz tippt Notizen auf dem iPad und legt sie vorerst von Hand in `notizen/` ab.
+1. **Sammeln:** Fritz schreibt Notizen in Goodnotes auf dem iPad, exportiert sie als PDF oder PNG und legt sie vorerst von Hand in `notizen/` ab.
 2. **Zusammenfassen:** Fritz sagt Claude, dass die Notizen zusammengefasst werden sollen.
 3. **Vorlesen:** Fritz startet die Audioerzeugung selbst und spielt die Datei ab.
 
@@ -31,21 +31,22 @@ Fürs Lernen darf nichts Falsches hängen bleiben: Claude gibt nur wieder, was i
 
 ## Entschieden
 
-- **Notizen:** Jede Notiz ist eine eigene `.md`- oder `.txt`-Datei im Ordner `notizen/`. Ihr Dateiname beginnt mit dem Datum, zum Beispiel `2026-11-09-schuldrecht.md`.
+- **Notizen:** Sie liegen als `.pdf`, `.png`, `.md` oder `.txt` im Ordner `notizen/`. Eine Datei kann mehrere AG-Tage enthalten, denn das Datum steht meist oben auf der Seite. Fritz exportiert immer nur neue Seiten.
 - **Zeitraum:** Eine Notiz wird einmal zu einer Tageszusammenfassung verarbeitet und danach nach `notizen/erledigt/` verschoben.
 - **Zusammenfassungen in Stufen:** Sie liegen in `zusammenfassungen/`: `tage/` (ausführlich), `wochen/` und `monate/` (das Wichtigste) sowie `morgen/` (die fertige Folge).
-- **Morgenfolge:** Sie wird täglich neu zusammengesetzt und dauert höchstens 30 Minuten, also etwa 4.000 Wörter. Die letzten vier Tage mit Notizen kommen ausführlich, ältere Tage derselben Woche nur mit den Kernpunkten, danach ein Rückblick auf frühere Wochen und den letzten Monat und zum Schluss die offenen Fragen.
-- **Rückblick:** Fritz kann gezielt die wichtigsten Inhalte einer bestimmten Woche oder eines Monats abrufen.
+- **Morgenfolge:** Sie wird täglich neu zusammengesetzt und dauert höchstens 30 Minuten, also etwa 4.000 Wörter. Sie ist nach Inhalten aufgebaut und nicht nach AG-Tagen: Was zusammengehört, steht zusammen, auch wenn es von verschiedenen Tagen stammt. AG-Tage werden dabei nicht genannt. Sie enthält nur Stoff aus den letzten sieben Tagen. Innerhalb dieser Zeit bestimmt das Alter nur die Ausführlichkeit: Die vier neuesten Tage mit Notizen kommen ausführlich, die übrigen nur mit den Kernpunkten. Zum Schluss kommen die offenen Fragen.
+- **Tagesdateien:** Sie sind ein Zwischenschritt und werden nicht direkt angehört. Sie halten fest, wann welcher Stoff dran war, damit die Ausführlichkeit nach dem Alter berechnet werden kann.
+- **Rückblick:** Wochen- und Monatsrückblicke gibt es nur auf Wunsch und nicht in der Morgenfolge. Fritz kann damit gezielt die wichtigsten Inhalte einer bestimmten Woche oder eines Monats abrufen. Auch darin wird nach Inhalten gegliedert.
 - **Start:** Fritz startet vorerst alles von Hand. Einen automatischen Start gibt es erst, wenn er ihn möchte.
 - **Audiodateien:** Sie liegen in `audio/` und kommen nicht in Git, weil das Repo sonst schnell um Gigabytes wächst. Sie lassen sich jederzeit aus den Texten neu erzeugen.
-- **Git:** Code, Skills und Testdaten werden über Git versioniert. Echte Notizen und daraus entstandene Zusammenfassungen werden nicht zu GitHub hochgeladen, solange die Datenschutzfrage unten offen ist.
+- **Git:** Code und Skills werden über Git versioniert. Echte Notizen und daraus entstandene Zusammenfassungen bleiben nur auf diesem Rechner und stehen in der `.gitignore`. Dafür gibt es keine Sicherung über GitHub.
 - **Endziel:** Später soll die Folge auf Fritz' Android-Handy laufen. Das Handy spielt nur ab, Claude und die Audioerzeugung laufen woanders.
 
 ## Noch nicht entschieden
 
 Diese Punkte bitte mit Fritz klären, wenn sie relevant werden, und das Ergebnis hier eintragen:
 
-- Können in den Notizen echte Namen oder Details aus Stationsakten vorkommen? Wer kann das GitHub-Repo sehen? Das muss vor dem iPad-Abgleich geklärt sein.
+- Können in den Notizen echte Namen oder Details aus Stationsakten vorkommen? Das muss vor dem iPad-Abgleich geklärt sein.
 - Womit wird das Audio endgültig erzeugt? Zuerst testen wir Piper, eine kostenlose Stimme, die lokal läuft.
-- Mit welcher App schreibt Fritz auf dem iPad, und wie kommen die Notizen später automatisch auf den Rechner?
+- Wie kommen die Goodnotes-Exporte später automatisch auf den Rechner, wenn sie nicht über Git laufen?
 - Wo laufen Claude und die Audioerzeugung später, und wird die Android-App eine installierbare Webseite oder eine richtige App?
